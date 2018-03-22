@@ -19,33 +19,96 @@ image_file_names = [
 ]
 
 fp_data = [
-[
-    (4, 1, 0),
-    (5, 6, 180),
-    (5, 2, -60),
-    (3, 9, -60),
-    (6, 5, -120),
-    (6, 3, 120),
-    (6, 1, -120),
-    (1, 6, 60),
-    (1, 2, 180),
-    (5, 9, 180),
-    (2, 5, 120),
-    (2, 3, 0),
-    (2, 1, 120),
-    (3, 6, -60),
-    (3, 2, 60),
-    (1, 9, 60),
-    (4, 5, 0),
-    (4, 3, -120)
-],
-[
-    (5, 3, -120)
+    [
+        (4, 1, 0),
+        (5, 6, 180),
+        (5, 2, -60),
+        (3, 9, -60),
+        (6, 5, -120),
+        (6, 3, 120),
+        (6, 1, -120),
+        (1, 6, 60),
+        (1, 2, 180),
+        (5, 9, 180),
+        (2, 5, 120),
+        (2, 3, 0),
+        (2, 1, 120),
+        (3, 6, -60),
+        (3, 2, 60),
+        (1, 9, 60),
+        (4, 5, 0),
+        (4, 3, -120)
+    ],
+    [
+        (5, 3, -120),
+        (5, 5, -120),
+        (6, 6, 180),
+        (5, 1, -120),
+        (4, 9, -60),
+        (6, 2, 180),
+        (1, 3, 120),
+        (1, 5, 120),
+        (2, 6, 60),
+        (1, 1, 120),
+        (6, 9, 180),
+        (2, 2, 60),
+        (3, 3, 0),
+        (3, 5, 0),
+        (4, 6, -60),
+        (3, 1, 0),
+        (2, 9, 60),
+        (4, 2, -60)
+    ],
+    [
+        (1, 13, 0),
+        (5, 7, 120),
+        (1, 8, 0),
+        (6, 12, 60),
+        (4, 10, 180),
+        (6, 4, 60),
+        (2, 11, -60),
+        (1, 7, 0),
+        (3, 8, -120),
+        (2, 12, -60),
+        (6, 10, 60),
+        (2, 4, -60),
+        (4, 11, 180),
+        (3, 7, -120),
+        (5, 8, 120),
+        (4, 12, 180),
+        (2, 10, -60),
+        (4, 5, 180),
+        (6, 11, 60)
+    ],
+    [
+        (1, 11, 60),
+        (6, 7, 120),
+        (2, 8, 0),
+        (1, 12, 60),
+        (5, 9, 180),
+        (1, 4, 60),
+        (3, 11, -60),
+        (2, 7, 0),
+        (4, 8, -120),
+        (3, 12, -60),
+        (1, 10, 60),
+        (3, 4, -60),
+        (5, 11, 180),
+        (4, 7, -120),
+        (6, 8, 120),
+        (5, 12, 180),
+        (3, 10, -60),
+        (5, 4, 180)
+    ]
 ]
-]
+
+
 im = Image.open(image_file_names[0])
 width, height = im.size
 base_image = Image.new("RGBA", (width * 18, height))
+
+trig_width = width / 2.0
+trig_height = (trig_width / 2.0) * math.tan(math.radians(60))
 
 
 def run_tris(tris, row, offset):
@@ -55,8 +118,8 @@ def run_tris(tris, row, offset):
 
         im = Image.open(image_file_names[image - 1])
         width, height = im.size
-        trig_width = width / 2.0
-        trig_height = (trig_width / 2.0) * math.tan(math.radians(60))
+        # trig_width = width / 2.0
+        # trig_height = (trig_width / 2.0) * math.tan(math.radians(60))
 
         upper = (height / 2.0) - (trig_height)
         lower = (height / 2.0) + (trig_height)
@@ -94,8 +157,8 @@ def run_tris(tris, row, offset):
         print target_segs[angle], segment, target_segs[angle] + segment, (target_segs[angle] + segment) % 6, target_seg
 
         al = im.copy().rotate(-angle)
-        compo = Image.new("RGBA", al.size, (0,0,0,0))
-        mask = Image.new("RGBA", al.size, (0,0,0,0))
+        compo = Image.new("RGBA", al.size, (0, 0, 0, 0))
+        mask = Image.new("RGBA", al.size, (0, 0, 0, 0))
 
         draw = ImageDraw.Draw(mask, 'RGBA')
         draw.polygon(masks[target_seg], (0, 0, 0, 255))
@@ -108,9 +171,10 @@ def run_tris(tris, row, offset):
         t_offset = int(trig_width / 2) if offset == 1 else 0
         base_image.paste(be, (int(trig_width) * i + t_offset, 0), be)
 
+
 offset = -1
-row = 0
-for data in fp_data:
+for i, data in enumerate(fp_data):
+    row = 0 if i < 2 else 1
     run_tris(data, row, offset)
     offset = offset * -1
 
